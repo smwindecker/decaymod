@@ -6,7 +6,7 @@
 \alias{decaymod}
 \title{The 'decaymod' package.}
 \description{
-A DESCRIPTION OF THE PACKAGE
+This package contains the compiled stan code for Weibull and negative exponential decay models with options for random effects, fixed effects on each decay parameter, and cross validation.
 }
 \references{
 Stan Development Team (2018). RStan: the R interface to Stan. R package version 2.17.3. http://mc-stan.org

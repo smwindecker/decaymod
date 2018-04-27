@@ -1,8 +1,6 @@
 #' The 'decaymod' package.
 #'
-#' @description This package contains the compiled stan code for Weibull and
-#' negative exponential decay models with options for random effects, fixed effects on
-#' each decay parameter, and cross validation.
+#' @description This package contains the compiled stan code for Weibull and negative exponential decay models with options for random effects, fixed effects on each decay parameter, and cross validation.
 #'
 #' @docType package
 #' @name decaymod-package
