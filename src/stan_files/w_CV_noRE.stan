@@ -1,3 +1,7 @@
+functions {
+#include /functions/weibull_functions.stan
+#include /functions/param_functions.stan
+}
 
 data {
   int<lower=1> N;                         // number of data points
@@ -25,11 +29,8 @@ parameters {
 }
 
 model {
-
-  real alpha[J];
-  real alpha_ln[J];
-  real beta[J];
-  real beta_ln[J];
+  vector[J] alpha;
+  vector[J] beta;
   vector[N] mu;
 
   // priors
@@ -38,28 +39,9 @@ model {
   b_beta ~ normal(0, 2);
 
   // likelihood
-  for (j in 1:J) {
-    alpha_ln[j] = 0;
-
-    for (p in 1:P_alpha) {
-      alpha_ln[j] = alpha_ln[j] + b_alpha[p] * X_alpha[j, p];
-    }
-
-    alpha[j] = exp(alpha_ln[j]);
-
-    beta_ln[j] = 0;
-
-    for (p in 1:P_beta) {
-      beta_ln[j] = beta_ln[j] + b_beta[p] * X_beta[j, p];
-    }
-
-    beta[j] = exp(beta_ln[j]);
-  }
-
-  for (i in 1:N) {
-    mu[i] = m0[i] - (time[i] / beta[sp[i]])^alpha[sp[i]];
-  }
-
+  alpha = param(b_alpha, X_alpha, P_alpha, J);
+  beta = param(b_beta, X_beta, P_beta, J);
+  mu = weibull(N, m0, time, beta, alpha, sp, sigma_obs);
   mT ~ normal(mu, sigma_obs);
 }
 
@@ -70,34 +52,12 @@ generated quantities {
 
   {
   real alpha_pred;
-  real alpha_ln_pred;
   real beta_pred;
-  real beta_ln_pred;
-  vector[N_test] loglik;
 
-  alpha_ln_pred = 0;
-
-  for (p in 1:P_alpha) {
-    alpha_ln_pred = alpha_ln_pred + b_alpha[p] * X_alpha_test[1, p];
-  }
-
-  alpha_pred = exp(alpha_ln_pred);
-
-  beta_ln_pred = 0;
-
-  for (p in 1:P_beta) {
-    beta_ln_pred = beta_ln_pred + b_beta[p] * X_beta_test[1, p];
-  }
-
-  beta_pred = exp(beta_ln_pred);
-
-  for (i in 1:N_test) {
-    mT_pred[i] = normal_rng(m0_test[i] - (time_test[i] / beta_pred)^alpha_pred, sigma_obs);
-    loglik[i] = normal_lpdf(mT_test[i] | m0_test[i] - (time_test[i] / beta_pred)^alpha_pred, sigma_obs);
-  }
-
-  neg_loglik = -1 * sum(loglik);
-
+  alpha_pred = param_pred(b_alpha, X_alpha_test, P_alpha);
+  beta_pred = param_pred(b_beta, X_beta_test, P_beta);
+  mT_pred = weibull_pred_rng(N_test, m0_test, time_test, beta_pred, alpha_pred, sigma_obs);
+  neg_loglik = weibull_negloglik(mT_test, m0_test, time_test, beta_pred, alpha_pred, sigma_obs, N_test);
   }
 }
 

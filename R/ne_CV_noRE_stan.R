@@ -1,4 +1,5 @@
-#' Bayesian linear regression with Stan
+#' Bayesian negative exponential function with Stan,
+#' including cross validation, without random effects
 #'
 #' @export
 #' @param x Numeric vector of input values.
@@ -6,8 +7,8 @@
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
-negexp_cv_re_stan <- function(x, y, ...) {
+ne_CV_noRE_stan <- function(x, y, ...) {
   standata <- list(x = x, y = y, N = length(y))
-  out <- rstan::sampling(stanmodels$negexp_cv_re, data = standata, ...)
+  out <- rstan::sampling(stanmodels$ne_CV_noRE, data = standata, ...)
   return(out)
 }
