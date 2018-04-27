@@ -1,9 +1,7 @@
 Package: decaymod
 Version: 0.0.0.9000
 Title: Trait-based bayesian decomposition models with stan
-Description: This package contains the compiled stan code for Weibull and
-negative exponential decay models with options for random effects, fixed effects on
-each decay parameter, and cross validation.
+Description: This package contains the compiled stan code for weibull and negative exponential decay models with options for random effects, fixed effects on each decay parameter, and cross validation.
 Authors@R: c(person("Saras", "Windecker", role = c("aut", "cre"), 
                     email = "saras.windecker@gmail.com"),
              person("Nick", "Golding", role = "aut",
