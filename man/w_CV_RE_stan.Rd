@@ -5,12 +5,33 @@
 \title{Bayesian weibull function with Stan,
 including cross validation, with random effects}
 \usage{
-w_CV_RE_stan(x, y, ...)
+w_CV_RE_stan(mT, mT_test, m0, m0_test, time, time_test, sp, J, X_alpha,
+  X_alpha_test, X_beta, X_beta_test, ...)
 }
 \arguments{
-\item{x}{Numeric vector of input values.}
+\item{mT}{Mass remaining of training data}
 
-\item{y}{Numberic vector of output values.}
+\item{mT_test}{Mass remaining of test data}
+
+\item{m0}{Initial mass of training data}
+
+\item{m0_test}{Initial mass of test data}
+
+\item{time}{Vector of time values for training data}
+
+\item{time_test}{Vector of time values for test data}
+
+\item{sp}{Numeric group identifier}
+
+\item{J}{Number of groups}
+
+\item{X_alpha}{Model matrix for alpha for training data}
+
+\item{X_alpha_test}{model matrix for alpha for test data}
+
+\item{X_beta}{Model matrix for beta for training data}
+
+\item{X_beta_test}{model matrix for beta for test data}
 
 \item{...}{Arguments passed to `rstan::sampling` (e.g. iter, chains).}
 }

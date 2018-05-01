@@ -5,12 +5,20 @@
 \title{Bayesian negative exponential function with Stan,
 without cross validation, with random effects}
 \usage{
-ne_noCV_RE_stan(x, y, ...)
+ne_noCV_RE_stan(mT, m0, time, sp, J, X, ...)
 }
 \arguments{
-\item{x}{Numeric vector of input values.}
+\item{mT}{Mass remaining of training data}
 
-\item{y}{Numberic vector of output values.}
+\item{m0}{Initial mass of training data}
+
+\item{time}{Vector of time values for training data}
+
+\item{sp}{Numeric group identifier}
+
+\item{J}{Number of groups}
+
+\item{X}{Model matrix for training data}
 
 \item{...}{Arguments passed to `rstan::sampling` (e.g. iter, chains).}
 }
