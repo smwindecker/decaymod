@@ -1,0 +1,291 @@
+"","model_type","fixed_effects","random_effects","cv","formula_k","formula_alpha","formula_beta","model"
+"1","ne","FE","RE","CV","~ 1",NA,NA,1
+"2","ne","FE","RE","CV","~ 1 + N",NA,NA,2
+"3","ne","FE","RE","CV","~ 1 + C",NA,NA,3
+"4","ne","FE","RE","CV","~ 1 + SLA",NA,NA,4
+"5","ne","FE","RE","CV","~ 1 + DMC",NA,NA,5
+"6","ne","FE","RE","CV","~ 1 + HC",NA,NA,6
+"7","ne","FE","RE","CV","~ 1 + CL",NA,NA,7
+"8","ne","FE","RE","CV","~ 1 + LG",NA,NA,8
+"9","ne","FE","noRE","CV","~ 1",NA,NA,9
+"10","ne","FE","noRE","CV","~ 1 + N",NA,NA,10
+"11","ne","FE","noRE","CV","~ 1 + C",NA,NA,11
+"12","ne","FE","noRE","CV","~ 1 + SLA",NA,NA,12
+"13","ne","FE","noRE","CV","~ 1 + DMC",NA,NA,13
+"14","ne","FE","noRE","CV","~ 1 + HC",NA,NA,14
+"15","ne","FE","noRE","CV","~ 1 + CL",NA,NA,15
+"16","ne","FE","noRE","CV","~ 1 + LG",NA,NA,16
+"17","ne","FE","RE","noCV","~ 1",NA,NA,17
+"18","ne","FE","RE","noCV","~ 1 + N",NA,NA,18
+"19","ne","FE","RE","noCV","~ 1 + C",NA,NA,19
+"20","ne","FE","RE","noCV","~ 1 + SLA",NA,NA,20
+"21","ne","FE","RE","noCV","~ 1 + DMC",NA,NA,21
+"22","ne","FE","RE","noCV","~ 1 + HC",NA,NA,22
+"23","ne","FE","RE","noCV","~ 1 + CL",NA,NA,23
+"24","ne","FE","RE","noCV","~ 1 + LG",NA,NA,24
+"25","ne","FE","noRE","noCV","~ 1",NA,NA,25
+"26","ne","FE","noRE","noCV","~ 1 + N",NA,NA,26
+"27","ne","FE","noRE","noCV","~ 1 + C",NA,NA,27
+"28","ne","FE","noRE","noCV","~ 1 + SLA",NA,NA,28
+"29","ne","FE","noRE","noCV","~ 1 + DMC",NA,NA,29
+"30","ne","FE","noRE","noCV","~ 1 + HC",NA,NA,30
+"31","ne","FE","noRE","noCV","~ 1 + CL",NA,NA,31
+"32","ne","FE","noRE","noCV","~ 1 + LG",NA,NA,32
+"33","ne","noFE","noRE","CV","~ 1",NA,NA,33
+"34","w","FE","noRE","CV",NA,"~ 1","~ 1",34
+"35","w","FE","noRE","CV",NA,"~ 1 + N","~ 1",35
+"36","w","FE","noRE","CV",NA,"~ 1 + C","~ 1",36
+"37","w","FE","noRE","CV",NA,"~ 1 + SLA","~ 1",37
+"38","w","FE","noRE","CV",NA,"~ 1 + DMC","~ 1",38
+"39","w","FE","noRE","CV",NA,"~ 1 + HC","~ 1",39
+"40","w","FE","noRE","CV",NA,"~ 1 + CL","~ 1",40
+"41","w","FE","noRE","CV",NA,"~ 1 + LG","~ 1",41
+"42","w","FE","noRE","CV",NA,"~ 1","~ 1 + N",42
+"43","w","FE","noRE","CV",NA,"~ 1 + N","~ 1 + N",43
+"44","w","FE","noRE","CV",NA,"~ 1 + C","~ 1 + N",44
+"45","w","FE","noRE","CV",NA,"~ 1 + SLA","~ 1 + N",45
+"46","w","FE","noRE","CV",NA,"~ 1 + DMC","~ 1 + N",46
+"47","w","FE","noRE","CV",NA,"~ 1 + HC","~ 1 + N",47
+"48","w","FE","noRE","CV",NA,"~ 1 + CL","~ 1 + N",48
+"49","w","FE","noRE","CV",NA,"~ 1 + LG","~ 1 + N",49
+"50","w","FE","noRE","CV",NA,"~ 1","~ 1 + C",50
+"51","w","FE","noRE","CV",NA,"~ 1 + N","~ 1 + C",51
+"52","w","FE","noRE","CV",NA,"~ 1 + C","~ 1 + C",52
+"53","w","FE","noRE","CV",NA,"~ 1 + SLA","~ 1 + C",53
+"54","w","FE","noRE","CV",NA,"~ 1 + DMC","~ 1 + C",54
+"55","w","FE","noRE","CV",NA,"~ 1 + HC","~ 1 + C",55
+"56","w","FE","noRE","CV",NA,"~ 1 + CL","~ 1 + C",56
+"57","w","FE","noRE","CV",NA,"~ 1 + LG","~ 1 + C",57
+"58","w","FE","noRE","CV",NA,"~ 1","~ 1 + SLA",58
+"59","w","FE","noRE","CV",NA,"~ 1 + N","~ 1 + SLA",59
+"60","w","FE","noRE","CV",NA,"~ 1 + C","~ 1 + SLA",60
+"61","w","FE","noRE","CV",NA,"~ 1 + SLA","~ 1 + SLA",61
+"62","w","FE","noRE","CV",NA,"~ 1 + DMC","~ 1 + SLA",62
+"63","w","FE","noRE","CV",NA,"~ 1 + HC","~ 1 + SLA",63
+"64","w","FE","noRE","CV",NA,"~ 1 + CL","~ 1 + SLA",64
+"65","w","FE","noRE","CV",NA,"~ 1 + LG","~ 1 + SLA",65
+"66","w","FE","noRE","CV",NA,"~ 1","~ 1 + DMC",66
+"67","w","FE","noRE","CV",NA,"~ 1 + N","~ 1 + DMC",67
+"68","w","FE","noRE","CV",NA,"~ 1 + C","~ 1 + DMC",68
+"69","w","FE","noRE","CV",NA,"~ 1 + SLA","~ 1 + DMC",69
+"70","w","FE","noRE","CV",NA,"~ 1 + DMC","~ 1 + DMC",70
+"71","w","FE","noRE","CV",NA,"~ 1 + HC","~ 1 + DMC",71
+"72","w","FE","noRE","CV",NA,"~ 1 + CL","~ 1 + DMC",72
+"73","w","FE","noRE","CV",NA,"~ 1 + LG","~ 1 + DMC",73
+"74","w","FE","noRE","CV",NA,"~ 1","~ 1 + HC",74
+"75","w","FE","noRE","CV",NA,"~ 1 + N","~ 1 + HC",75
+"76","w","FE","noRE","CV",NA,"~ 1 + C","~ 1 + HC",76
+"77","w","FE","noRE","CV",NA,"~ 1 + SLA","~ 1 + HC",77
+"78","w","FE","noRE","CV",NA,"~ 1 + DMC","~ 1 + HC",78
+"79","w","FE","noRE","CV",NA,"~ 1 + HC","~ 1 + HC",79
+"80","w","FE","noRE","CV",NA,"~ 1 + CL","~ 1 + HC",80
+"81","w","FE","noRE","CV",NA,"~ 1 + LG","~ 1 + HC",81
+"82","w","FE","noRE","CV",NA,"~ 1","~ 1 + CL",82
+"83","w","FE","noRE","CV",NA,"~ 1 + N","~ 1 + CL",83
+"84","w","FE","noRE","CV",NA,"~ 1 + C","~ 1 + CL",84
+"85","w","FE","noRE","CV",NA,"~ 1 + SLA","~ 1 + CL",85
+"86","w","FE","noRE","CV",NA,"~ 1 + DMC","~ 1 + CL",86
+"87","w","FE","noRE","CV",NA,"~ 1 + HC","~ 1 + CL",87
+"88","w","FE","noRE","CV",NA,"~ 1 + CL","~ 1 + CL",88
+"89","w","FE","noRE","CV",NA,"~ 1 + LG","~ 1 + CL",89
+"90","w","FE","noRE","CV",NA,"~ 1","~ 1 + LG",90
+"91","w","FE","noRE","CV",NA,"~ 1 + N","~ 1 + LG",91
+"92","w","FE","noRE","CV",NA,"~ 1 + C","~ 1 + LG",92
+"93","w","FE","noRE","CV",NA,"~ 1 + SLA","~ 1 + LG",93
+"94","w","FE","noRE","CV",NA,"~ 1 + DMC","~ 1 + LG",94
+"95","w","FE","noRE","CV",NA,"~ 1 + HC","~ 1 + LG",95
+"96","w","FE","noRE","CV",NA,"~ 1 + CL","~ 1 + LG",96
+"97","w","FE","noRE","CV",NA,"~ 1 + LG","~ 1 + LG",97
+"98","w","FE","RE","noCV",NA,"~ 1","~ 1",98
+"99","w","FE","RE","noCV",NA,"~ 1 + N","~ 1",99
+"100","w","FE","RE","noCV",NA,"~ 1 + C","~ 1",100
+"101","w","FE","RE","noCV",NA,"~ 1 + SLA","~ 1",101
+"102","w","FE","RE","noCV",NA,"~ 1 + DMC","~ 1",102
+"103","w","FE","RE","noCV",NA,"~ 1 + HC","~ 1",103
+"104","w","FE","RE","noCV",NA,"~ 1 + CL","~ 1",104
+"105","w","FE","RE","noCV",NA,"~ 1 + LG","~ 1",105
+"106","w","FE","RE","noCV",NA,"~ 1","~ 1 + N",106
+"107","w","FE","RE","noCV",NA,"~ 1 + N","~ 1 + N",107
+"108","w","FE","RE","noCV",NA,"~ 1 + C","~ 1 + N",108
+"109","w","FE","RE","noCV",NA,"~ 1 + SLA","~ 1 + N",109
+"110","w","FE","RE","noCV",NA,"~ 1 + DMC","~ 1 + N",110
+"111","w","FE","RE","noCV",NA,"~ 1 + HC","~ 1 + N",111
+"112","w","FE","RE","noCV",NA,"~ 1 + CL","~ 1 + N",112
+"113","w","FE","RE","noCV",NA,"~ 1 + LG","~ 1 + N",113
+"114","w","FE","RE","noCV",NA,"~ 1","~ 1 + C",114
+"115","w","FE","RE","noCV",NA,"~ 1 + N","~ 1 + C",115
+"116","w","FE","RE","noCV",NA,"~ 1 + C","~ 1 + C",116
+"117","w","FE","RE","noCV",NA,"~ 1 + SLA","~ 1 + C",117
+"118","w","FE","RE","noCV",NA,"~ 1 + DMC","~ 1 + C",118
+"119","w","FE","RE","noCV",NA,"~ 1 + HC","~ 1 + C",119
+"120","w","FE","RE","noCV",NA,"~ 1 + CL","~ 1 + C",120
+"121","w","FE","RE","noCV",NA,"~ 1 + LG","~ 1 + C",121
+"122","w","FE","RE","noCV",NA,"~ 1","~ 1 + SLA",122
+"123","w","FE","RE","noCV",NA,"~ 1 + N","~ 1 + SLA",123
+"124","w","FE","RE","noCV",NA,"~ 1 + C","~ 1 + SLA",124
+"125","w","FE","RE","noCV",NA,"~ 1 + SLA","~ 1 + SLA",125
+"126","w","FE","RE","noCV",NA,"~ 1 + DMC","~ 1 + SLA",126
+"127","w","FE","RE","noCV",NA,"~ 1 + HC","~ 1 + SLA",127
+"128","w","FE","RE","noCV",NA,"~ 1 + CL","~ 1 + SLA",128
+"129","w","FE","RE","noCV",NA,"~ 1 + LG","~ 1 + SLA",129
+"130","w","FE","RE","noCV",NA,"~ 1","~ 1 + DMC",130
+"131","w","FE","RE","noCV",NA,"~ 1 + N","~ 1 + DMC",131
+"132","w","FE","RE","noCV",NA,"~ 1 + C","~ 1 + DMC",132
+"133","w","FE","RE","noCV",NA,"~ 1 + SLA","~ 1 + DMC",133
+"134","w","FE","RE","noCV",NA,"~ 1 + DMC","~ 1 + DMC",134
+"135","w","FE","RE","noCV",NA,"~ 1 + HC","~ 1 + DMC",135
+"136","w","FE","RE","noCV",NA,"~ 1 + CL","~ 1 + DMC",136
+"137","w","FE","RE","noCV",NA,"~ 1 + LG","~ 1 + DMC",137
+"138","w","FE","RE","noCV",NA,"~ 1","~ 1 + HC",138
+"139","w","FE","RE","noCV",NA,"~ 1 + N","~ 1 + HC",139
+"140","w","FE","RE","noCV",NA,"~ 1 + C","~ 1 + HC",140
+"141","w","FE","RE","noCV",NA,"~ 1 + SLA","~ 1 + HC",141
+"142","w","FE","RE","noCV",NA,"~ 1 + DMC","~ 1 + HC",142
+"143","w","FE","RE","noCV",NA,"~ 1 + HC","~ 1 + HC",143
+"144","w","FE","RE","noCV",NA,"~ 1 + CL","~ 1 + HC",144
+"145","w","FE","RE","noCV",NA,"~ 1 + LG","~ 1 + HC",145
+"146","w","FE","RE","noCV",NA,"~ 1","~ 1 + CL",146
+"147","w","FE","RE","noCV",NA,"~ 1 + N","~ 1 + CL",147
+"148","w","FE","RE","noCV",NA,"~ 1 + C","~ 1 + CL",148
+"149","w","FE","RE","noCV",NA,"~ 1 + SLA","~ 1 + CL",149
+"150","w","FE","RE","noCV",NA,"~ 1 + DMC","~ 1 + CL",150
+"151","w","FE","RE","noCV",NA,"~ 1 + HC","~ 1 + CL",151
+"152","w","FE","RE","noCV",NA,"~ 1 + CL","~ 1 + CL",152
+"153","w","FE","RE","noCV",NA,"~ 1 + LG","~ 1 + CL",153
+"154","w","FE","RE","noCV",NA,"~ 1","~ 1 + LG",154
+"155","w","FE","RE","noCV",NA,"~ 1 + N","~ 1 + LG",155
+"156","w","FE","RE","noCV",NA,"~ 1 + C","~ 1 + LG",156
+"157","w","FE","RE","noCV",NA,"~ 1 + SLA","~ 1 + LG",157
+"158","w","FE","RE","noCV",NA,"~ 1 + DMC","~ 1 + LG",158
+"159","w","FE","RE","noCV",NA,"~ 1 + HC","~ 1 + LG",159
+"160","w","FE","RE","noCV",NA,"~ 1 + CL","~ 1 + LG",160
+"161","w","FE","RE","noCV",NA,"~ 1 + LG","~ 1 + LG",161
+"162","w","FE","noRE","noCV",NA,"~ 1","~ 1",162
+"163","w","FE","noRE","noCV",NA,"~ 1 + N","~ 1",163
+"164","w","FE","noRE","noCV",NA,"~ 1 + C","~ 1",164
+"165","w","FE","noRE","noCV",NA,"~ 1 + SLA","~ 1",165
+"166","w","FE","noRE","noCV",NA,"~ 1 + DMC","~ 1",166
+"167","w","FE","noRE","noCV",NA,"~ 1 + HC","~ 1",167
+"168","w","FE","noRE","noCV",NA,"~ 1 + CL","~ 1",168
+"169","w","FE","noRE","noCV",NA,"~ 1 + LG","~ 1",169
+"170","w","FE","noRE","noCV",NA,"~ 1","~ 1 + N",170
+"171","w","FE","noRE","noCV",NA,"~ 1 + N","~ 1 + N",171
+"172","w","FE","noRE","noCV",NA,"~ 1 + C","~ 1 + N",172
+"173","w","FE","noRE","noCV",NA,"~ 1 + SLA","~ 1 + N",173
+"174","w","FE","noRE","noCV",NA,"~ 1 + DMC","~ 1 + N",174
+"175","w","FE","noRE","noCV",NA,"~ 1 + HC","~ 1 + N",175
+"176","w","FE","noRE","noCV",NA,"~ 1 + CL","~ 1 + N",176
+"177","w","FE","noRE","noCV",NA,"~ 1 + LG","~ 1 + N",177
+"178","w","FE","noRE","noCV",NA,"~ 1","~ 1 + C",178
+"179","w","FE","noRE","noCV",NA,"~ 1 + N","~ 1 + C",179
+"180","w","FE","noRE","noCV",NA,"~ 1 + C","~ 1 + C",180
+"181","w","FE","noRE","noCV",NA,"~ 1 + SLA","~ 1 + C",181
+"182","w","FE","noRE","noCV",NA,"~ 1 + DMC","~ 1 + C",182
+"183","w","FE","noRE","noCV",NA,"~ 1 + HC","~ 1 + C",183
+"184","w","FE","noRE","noCV",NA,"~ 1 + CL","~ 1 + C",184
+"185","w","FE","noRE","noCV",NA,"~ 1 + LG","~ 1 + C",185
+"186","w","FE","noRE","noCV",NA,"~ 1","~ 1 + SLA",186
+"187","w","FE","noRE","noCV",NA,"~ 1 + N","~ 1 + SLA",187
+"188","w","FE","noRE","noCV",NA,"~ 1 + C","~ 1 + SLA",188
+"189","w","FE","noRE","noCV",NA,"~ 1 + SLA","~ 1 + SLA",189
+"190","w","FE","noRE","noCV",NA,"~ 1 + DMC","~ 1 + SLA",190
+"191","w","FE","noRE","noCV",NA,"~ 1 + HC","~ 1 + SLA",191
+"192","w","FE","noRE","noCV",NA,"~ 1 + CL","~ 1 + SLA",192
+"193","w","FE","noRE","noCV",NA,"~ 1 + LG","~ 1 + SLA",193
+"194","w","FE","noRE","noCV",NA,"~ 1","~ 1 + DMC",194
+"195","w","FE","noRE","noCV",NA,"~ 1 + N","~ 1 + DMC",195
+"196","w","FE","noRE","noCV",NA,"~ 1 + C","~ 1 + DMC",196
+"197","w","FE","noRE","noCV",NA,"~ 1 + SLA","~ 1 + DMC",197
+"198","w","FE","noRE","noCV",NA,"~ 1 + DMC","~ 1 + DMC",198
+"199","w","FE","noRE","noCV",NA,"~ 1 + HC","~ 1 + DMC",199
+"200","w","FE","noRE","noCV",NA,"~ 1 + CL","~ 1 + DMC",200
+"201","w","FE","noRE","noCV",NA,"~ 1 + LG","~ 1 + DMC",201
+"202","w","FE","noRE","noCV",NA,"~ 1","~ 1 + HC",202
+"203","w","FE","noRE","noCV",NA,"~ 1 + N","~ 1 + HC",203
+"204","w","FE","noRE","noCV",NA,"~ 1 + C","~ 1 + HC",204
+"205","w","FE","noRE","noCV",NA,"~ 1 + SLA","~ 1 + HC",205
+"206","w","FE","noRE","noCV",NA,"~ 1 + DMC","~ 1 + HC",206
+"207","w","FE","noRE","noCV",NA,"~ 1 + HC","~ 1 + HC",207
+"208","w","FE","noRE","noCV",NA,"~ 1 + CL","~ 1 + HC",208
+"209","w","FE","noRE","noCV",NA,"~ 1 + LG","~ 1 + HC",209
+"210","w","FE","noRE","noCV",NA,"~ 1","~ 1 + CL",210
+"211","w","FE","noRE","noCV",NA,"~ 1 + N","~ 1 + CL",211
+"212","w","FE","noRE","noCV",NA,"~ 1 + C","~ 1 + CL",212
+"213","w","FE","noRE","noCV",NA,"~ 1 + SLA","~ 1 + CL",213
+"214","w","FE","noRE","noCV",NA,"~ 1 + DMC","~ 1 + CL",214
+"215","w","FE","noRE","noCV",NA,"~ 1 + HC","~ 1 + CL",215
+"216","w","FE","noRE","noCV",NA,"~ 1 + CL","~ 1 + CL",216
+"217","w","FE","noRE","noCV",NA,"~ 1 + LG","~ 1 + CL",217
+"218","w","FE","noRE","noCV",NA,"~ 1","~ 1 + LG",218
+"219","w","FE","noRE","noCV",NA,"~ 1 + N","~ 1 + LG",219
+"220","w","FE","noRE","noCV",NA,"~ 1 + C","~ 1 + LG",220
+"221","w","FE","noRE","noCV",NA,"~ 1 + SLA","~ 1 + LG",221
+"222","w","FE","noRE","noCV",NA,"~ 1 + DMC","~ 1 + LG",222
+"223","w","FE","noRE","noCV",NA,"~ 1 + HC","~ 1 + LG",223
+"224","w","FE","noRE","noCV",NA,"~ 1 + CL","~ 1 + LG",224
+"225","w","FE","noRE","noCV",NA,"~ 1 + LG","~ 1 + LG",225
+"226","w","FE","RE","CV",NA,"~ 1","~ 1",226
+"227","w","FE","RE","CV",NA,"~ 1 + N","~ 1",227
+"228","w","FE","RE","CV",NA,"~ 1 + C","~ 1",228
+"229","w","FE","RE","CV",NA,"~ 1 + SLA","~ 1",229
+"230","w","FE","RE","CV",NA,"~ 1 + DMC","~ 1",230
+"231","w","FE","RE","CV",NA,"~ 1 + HC","~ 1",231
+"232","w","FE","RE","CV",NA,"~ 1 + CL","~ 1",232
+"233","w","FE","RE","CV",NA,"~ 1 + LG","~ 1",233
+"234","w","FE","RE","CV",NA,"~ 1","~ 1 + N",234
+"235","w","FE","RE","CV",NA,"~ 1 + N","~ 1 + N",235
+"236","w","FE","RE","CV",NA,"~ 1 + C","~ 1 + N",236
+"237","w","FE","RE","CV",NA,"~ 1 + SLA","~ 1 + N",237
+"238","w","FE","RE","CV",NA,"~ 1 + DMC","~ 1 + N",238
+"239","w","FE","RE","CV",NA,"~ 1 + HC","~ 1 + N",239
+"240","w","FE","RE","CV",NA,"~ 1 + CL","~ 1 + N",240
+"241","w","FE","RE","CV",NA,"~ 1 + LG","~ 1 + N",241
+"242","w","FE","RE","CV",NA,"~ 1","~ 1 + C",242
+"243","w","FE","RE","CV",NA,"~ 1 + N","~ 1 + C",243
+"244","w","FE","RE","CV",NA,"~ 1 + C","~ 1 + C",244
+"245","w","FE","RE","CV",NA,"~ 1 + SLA","~ 1 + C",245
+"246","w","FE","RE","CV",NA,"~ 1 + DMC","~ 1 + C",246
+"247","w","FE","RE","CV",NA,"~ 1 + HC","~ 1 + C",247
+"248","w","FE","RE","CV",NA,"~ 1 + CL","~ 1 + C",248
+"249","w","FE","RE","CV",NA,"~ 1 + LG","~ 1 + C",249
+"250","w","FE","RE","CV",NA,"~ 1","~ 1 + SLA",250
+"251","w","FE","RE","CV",NA,"~ 1 + N","~ 1 + SLA",251
+"252","w","FE","RE","CV",NA,"~ 1 + C","~ 1 + SLA",252
+"253","w","FE","RE","CV",NA,"~ 1 + SLA","~ 1 + SLA",253
+"254","w","FE","RE","CV",NA,"~ 1 + DMC","~ 1 + SLA",254
+"255","w","FE","RE","CV",NA,"~ 1 + HC","~ 1 + SLA",255
+"256","w","FE","RE","CV",NA,"~ 1 + CL","~ 1 + SLA",256
+"257","w","FE","RE","CV",NA,"~ 1 + LG","~ 1 + SLA",257
+"258","w","FE","RE","CV",NA,"~ 1","~ 1 + DMC",258
+"259","w","FE","RE","CV",NA,"~ 1 + N","~ 1 + DMC",259
+"260","w","FE","RE","CV",NA,"~ 1 + C","~ 1 + DMC",260
+"261","w","FE","RE","CV",NA,"~ 1 + SLA","~ 1 + DMC",261
+"262","w","FE","RE","CV",NA,"~ 1 + DMC","~ 1 + DMC",262
+"263","w","FE","RE","CV",NA,"~ 1 + HC","~ 1 + DMC",263
+"264","w","FE","RE","CV",NA,"~ 1 + CL","~ 1 + DMC",264
+"265","w","FE","RE","CV",NA,"~ 1 + LG","~ 1 + DMC",265
+"266","w","FE","RE","CV",NA,"~ 1","~ 1 + HC",266
+"267","w","FE","RE","CV",NA,"~ 1 + N","~ 1 + HC",267
+"268","w","FE","RE","CV",NA,"~ 1 + C","~ 1 + HC",268
+"269","w","FE","RE","CV",NA,"~ 1 + SLA","~ 1 + HC",269
+"270","w","FE","RE","CV",NA,"~ 1 + DMC","~ 1 + HC",270
+"271","w","FE","RE","CV",NA,"~ 1 + HC","~ 1 + HC",271
+"272","w","FE","RE","CV",NA,"~ 1 + CL","~ 1 + HC",272
+"273","w","FE","RE","CV",NA,"~ 1 + LG","~ 1 + HC",273
+"274","w","FE","RE","CV",NA,"~ 1","~ 1 + CL",274
+"275","w","FE","RE","CV",NA,"~ 1 + N","~ 1 + CL",275
+"276","w","FE","RE","CV",NA,"~ 1 + C","~ 1 + CL",276
+"277","w","FE","RE","CV",NA,"~ 1 + SLA","~ 1 + CL",277
+"278","w","FE","RE","CV",NA,"~ 1 + DMC","~ 1 + CL",278
+"279","w","FE","RE","CV",NA,"~ 1 + HC","~ 1 + CL",279
+"280","w","FE","RE","CV",NA,"~ 1 + CL","~ 1 + CL",280
+"281","w","FE","RE","CV",NA,"~ 1 + LG","~ 1 + CL",281
+"282","w","FE","RE","CV",NA,"~ 1","~ 1 + LG",282
+"283","w","FE","RE","CV",NA,"~ 1 + N","~ 1 + LG",283
+"284","w","FE","RE","CV",NA,"~ 1 + C","~ 1 + LG",284
+"285","w","FE","RE","CV",NA,"~ 1 + SLA","~ 1 + LG",285
+"286","w","FE","RE","CV",NA,"~ 1 + DMC","~ 1 + LG",286
+"287","w","FE","RE","CV",NA,"~ 1 + HC","~ 1 + LG",287
+"288","w","FE","RE","CV",NA,"~ 1 + CL","~ 1 + LG",288
+"289","w","FE","RE","CV",NA,"~ 1 + LG","~ 1 + LG",289
+"290","w","noFE","noRE","CV",NA,"~ 1","~ 1",290
