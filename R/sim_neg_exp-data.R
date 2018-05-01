@@ -1,15 +1,16 @@
-#' Simulated Negative Exponential data
-#'
-#'
+#' Simulated negative exponential data
 #'
 #' @docType data
 #'
 #' @usage data(sim_neg_exp)
 #'
-#' @format An object of class \code{'cross'}
+#' @format A dataframe
 #'
 #' @keywords datasets
 #'
-#' @source Saras M Windecker
-
-'sim_neg_exp'
+#' @source Saras Windecker
+#'
+#' @examples
+#' data(sim_neg_exp)
+#' head(sim_neg_exp)
+"sim_neg_exp"

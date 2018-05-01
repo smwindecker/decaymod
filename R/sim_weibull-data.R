@@ -1,15 +1,16 @@
-#' Simulated Weibull data
-#'
-#'
+#' Simulated weibull data
 #'
 #' @docType data
 #'
 #' @usage data(sim_weibull)
 #'
-#' @format An object of class \code{'cross'}
+#' @format A dataframe.
 #'
 #' @keywords datasets
 #'
-#' @source Saras M Windecker
-
-'sim_weibull'
+#' @source Saras Windecker
+#'
+#' @examples
+#' data(sim_weibull)
+#' head(sim_weibull)
+"sim_weibull"
