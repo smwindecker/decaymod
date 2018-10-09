@@ -24,6 +24,7 @@
 .Rproj.user
 
 **/.DS_Store
+**/**.DS_Store
 
 .Rproj.user
 .Rhistory
@@ -31,3 +32,4 @@ src/stan_files/*.o
 src/stan_files/*.cc
 src/stan_files/*.hpp
 man/*.Rd
+src/*.o
