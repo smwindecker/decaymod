@@ -1,137 +1,179 @@
-# try and find old versions of the create_jobs
+## Analysis functions
 
-# and model calls.
-# Want them to save .rds for each model - putting each cv iteration into a list
+#' creates job list for all models
+#'
+#' @export
+#' @param model_type 'w' or 'ne'
+#' @param data data
+#' @param cv_cluster if cross-validation to be used, what to group by
+#' @param random_effects logical
+#' @param fixed_effects list of trait combinations
+#' @return jobs list
+#'
+create_jobs <- function (model_type,
+                         data,
+                         cv_cluster = NULL,
+                         random_effects = TRUE,
+                         fixed_effects = NULL) {
 
-# Create job list of all model iterations to be run
-#
-# @param models dataframe listing model types and specifications
-# @param data dataframe containing data for models
-# @param cv_cluster optional columns name to specify cv clusters
-# @param fixed_effects_list optional list of fixed effects - corresponding to column names in data
-# @return list of all model iterations
-# traits <- c('N', 'C', 'SLA', 'DMC', 'HC', 'CL', 'LG')
-# model_df <- data.frame(model_type = c('w', 'w', 'ne'),
-#                        fixed_effects = c(TRUE, FALSE, FALSE),
-#                        random_effects = c(FALSE, TRUE, FALSE))
-# jobs_list <- create_jobs(models = model_df,
-#                          data = df,
-#                          cv_cluster = 'species_code',
-#                          fixed_effects_list = traits)
-
-# want this to create all my jobs.therefore doesn't need a cv cluster or fixed effects
-
-create_jobs <- function (models, data, cv_cluster = NULL, fixed_effects_list = NULL) {
-
-  if (is.null(fixed_effects_list) & nrow(models[isTRUE(models$fixed_effects), ]) > 0) {
-    stop('fixed effects reported but no list provided')
+  if (is.null(fixed_effects)) {
+    param_formula <- list('~ 1')
   }
 
-  if (!is.null(fixed_effects_list)) {
-
-    # create list of traits as expressions with tilda and intercept terms
-    formulas <- c('~ 1', sprintf("%s + %s", '~ 1', fixed_effects_list))
-
-    # prep for negative exponential model
-    n <- length(formulas)
-    ne_formulas <- data.frame(model_type = rep('ne', n),
-                              fixed_effects = rep('FE', n),
-                              formula_k = formulas,
-                              formula_alpha = NA,
-                              formula_beta = NA,
-                              stringsAsFactors = FALSE)
-    models_ne <- merge(models, ne_formulas, by = c('model_type', 'fixed_effects'), all.x = TRUE)
-
-    # prep two parameter merge
-    formula_grid <- expand.grid(formulas, formulas, stringsAsFactors = FALSE)
-    g <- nrow(formula_grid)
-
-    # prep for weibull model
-    w_formulas <- data.frame(model_type = rep('w', g),
-                             fixed_effects = rep('FE', g),
-                             formula_k = NA,
-                             formula_alpha = formula_grid[,1],
-                             formula_beta = formula_grid[,2],
-                             stringsAsFactors = FALSE)
-
-    models <- merge(models_ne, w_formulas, by = c('model_type', 'fixed_effects',
-                                                  'formula_k', 'formula_alpha', 'formula_beta'),
-                    all.y = TRUE)
-
+  if (!is.null(fixed_effects)) {
+    param_formula <- lapply(fixed_effects, mypaste)
   }
 
-  if (is.null(fixed_effects_list)) {
-    models$formula_k <- NA
-    models$formula_alpha <- NA
-    models$formula_beta <- NA
-  }
-
-  # give formulas to non fixed effects models
-  models$formula_k[models$model_type == 'ne' & is.na(models$formula_k)] <- '~ 1'
-  models$formula_alpha[models$model_type == 'w' & is.na(models$formula_alpha)] <- '~ 1'
-  models$formula_beta[models$model_type == 'w' & is.na(models$formula_beta)] <- '~ 1'
-
-  # number the models
-  models$model <- seq(1:nrow(models))
-
-  models <- models[, - which(names(models) %in% 'fixed_effects')]
-
-  # change dataframe to list
-  jobs <- split(models, seq(nrow(models)))
-
-  # add filename attribute -- what's the job ID in this case?
-  # jobs$filename <- NULL
-  # jobs$filename <- sprintf('R/stanOUTPUT/%s.rds', jobs$job_id)
-
-  # if cv cluster is provided, these jobs are cv. and therefore need to be expanded
+  # for rows that are FE yes. add on like this
   if (!is.null(cv_cluster)) {
+
     clusters <- unique(data[, cv_cluster])
-    tmp <- lapply(jobs, expand_models, clusters)
-    jobs <- unlist(tmp, recursive = FALSE)
+    tmp <- lapply(param_formula, expand_models, clusters)
+    tmp_expanded <- unlist(tmp, recursive = FALSE)
+
+    jobs <- lapply(tmp_expanded, model_details,
+                   model_type = model_type,
+                   random_effects = random_effects,
+                   cv = TRUE)
+
   }
 
-  jobs
+  if (is.null(cv_cluster)) {
+
+    jobs <- lapply(param_formula, model_details,
+                   model_type = model_type,
+                   random_effects = random_effects,
+                   cv = FALSE)
+
+  }
+
+  return(jobs)
+}
+
+
+#' puts the parameter formulas in correct format
+#'
+#' @param vector trait list to be modified into formula form
+#' @return trait formula in proper form
+#'
+mypaste <- function (vector) {
+
+  vectornew <- c('1', vector)
+  vectornew <- paste(vectornew, sep = '', collapse = ' + ')
+  vectornew <- paste('~ ', vectornew, sep = ' ')
+  vectornew
 
 }
 
+
+#' put all model details in correct format
+#'
+#' @param param_formula formula of fixed effect to be estimated
+#' @param model_type 'w' or 'ne'
+#' @param random_effects logical
+#' @param cv logical
+#' @return model dataframe in proper form
+#'
+model_details <- function (param_formula, model_type, random_effects, cv) {
+
+  my_df <- data.frame(param_formula,
+                      model_type = model_type,
+                      random_effects = random_effects,
+                      cross_validation = cv)
+
+}
+
+
+#' replicate model rows for each cross-validation cluster
+#'
+#' @param input fixed effect model
+#' @param clusters list of clusters for cross validation
+#' @return model dataframe expanded for cross val levels
+#'
 expand_models <- function (input, clusters) {
 
   # repeat each model n = number of species times
-  expand <- expand.grid(cv_cluster = clusters,
-                        model = input$model)
-  expand$model <- as.character(expand$model)
 
-  # merge with formula dataframe so also have the parameter functions listed
-  job <- merge(expand, input, by = 'model')
+  expand <- expand.grid(cluster = clusters,
+                        param_formula = input)
 
-  list <- split(job, seq(nrow(job)))
+  expand$param_formula <- as.character(expand$param_formula)
+
+  list <- split(expand, seq(nrow(expand)))
 
   return(list)
-
 }
 
-## Model analysis
 
-# runs all models from jobs list
-run_models <- function (jobs_list, data, initial_mass, removal_mass, time, group, n_cores) {
+#' runs all models from jobs list
+#'
+#' @export
+#' @param jobs_list list of jobs to be run
+#' @param data data
+#' @param initial_mass initial mass variable
+#' @param removal_mass removal mass variable
+#' @param time time variable
+#' @param group group for random effects
+#' @param n_cores number of cores to run model on
+#' @param save_fit logical
+#' @return all models outputs
+#'
+run_models <- function (jobs_list, data, initial_mass,
+                        removal_mass, time, group,
+                        n_cores, save_fit = FALSE) {
 
-  registerDoMC(n_cores)
+  doMC::registerDoMC(n_cores)
+
+  `%dopar%` <- foreach::`%dopar%`
 
   # so my decaymod outputs the fit. i want to append it to the list.
   model_output <- foreach::foreach(i = 1:length(jobs_list)) %dopar% {
-    output_i <- evaluate_decaymod(jobs_list[[i]], data, initial_mass, removal_mass, time, group)
+    output_i <- evaluate_decaymod(jobs_list[[i]], data, initial_mass,
+                                  removal_mass, time, group, save_fit)
     return(output_i)
   }
 
-  return(model_output)
+  # negative log likelihood results
+  mod_specs <- dplyr::bind_rows(lapply(1:length(model_output), function(x) {
+    return(model_output[[x]]$mod_specs)
+  }))
+
+  diag <- dplyr::bind_rows(lapply(1:length(model_output), function(x) {
+    return(model_output[[x]]$diag)
+  }))
+
+  if (isTRUE(save_fit)) {
+    model_results <- list(mod_specs = mod_specs,
+                          diagnostics = diag,
+                          fit = model_output[[1]]$fit)
+  }
+
+  if (!isTRUE(save_fit)) {
+    model_results <- list(mod_specs = mod_specs,
+                          diagnostics = diag)
+  }
+
+  return(model_results)
 }
 
-# call the function to fit the model, extracts the fit, diagnostics, and negative loglikelihood
-evaluate_decaymod <- function (df, data, initial_mass, removal_mass, time, group) {
 
-  if ('cv_cluster' %in% colnames(df)) {
+#' call the function to fit the model, extracts the fit, diagnostics, and negative loglikelihood
+#'
+#' @param df job list item as dataframe row
+#' @param data data
+#' @param initial_mass initial mass variable
+#' @param removal_mass removal mass variable
+#' @param time time variable
+#' @param group group for random effects
+#' @param save_fit logical
+#' @return evaluate model for individual list item
+#'
+evaluate_decaymod <- function (df, data, initial_mass,
+                               removal_mass, time, group, save_fit) {
+
+  if ('cluster' %in% colnames(df)) {
     cross_validation <- TRUE
-    group_id <- df$cv_cluster
+    group_id <- df$cluster
   } else {
     cross_validation <- FALSE
     group_id <- NA
@@ -146,9 +188,7 @@ evaluate_decaymod <- function (df, data, initial_mass, removal_mass, time, group
                   random_effects = df$random_effects,
                   cross_validation = cross_validation,
                   group_id = group_id,
-                  formula_k = df$formula_k,
-                  formula_alpha = df$formula_alpha,
-                  formula_beta = df$formula_beta)
+                  param_formula = df$param_formula)
 
   # diagnostics
   fit_summary <- rstan::summary(fit)$summary
@@ -157,7 +197,8 @@ evaluate_decaymod <- function (df, data, initial_mass, removal_mass, time, group
   sampler_params <- rstan::get_sampler_params(fit, inc_warmup = FALSE)
   sum_div <- sum(sapply(sampler_params, function(x) sum(x[, "divergent__"])))
   max_treedepth <- sapply(sampler_params, function(x) max(x[, "treedepth__"]))
-  diagnostics <- data.frame(abs_rhat = abs_rhat,
+  diagnostics <- data.frame(chain = 1:4,
+                            abs_rhat = abs_rhat,
                             neff_min = neff_min,
                             sum_div = sum_div,
                             max_treedepth = max_treedepth,
@@ -168,232 +209,131 @@ evaluate_decaymod <- function (df, data, initial_mass, removal_mass, time, group
     df$neg_loglik <- mean(neg_loglik_df$neg_loglik, na.rm = TRUE)
   }
 
-  fit_list <- list(mod_specs = df,
-                   fit = fit,
-                   diagnostics = diagnostics)
+  # merge df and diagnostics.
+  df_expanded <- df[rep(row.names(df), 4),]
+  df_diag <- cbind(df_expanded, diagnostics)
 
-  fit_list
+  if (isTRUE(save_fit)) {
+    fit_list <- list(mod_specs = df,
+                     diag = df_diag,
+                     fit = fit)
+  }
+
+  if (!isTRUE(save_fit)) {
+    fit_list <- list(mod_specs = df,
+                     diag = df_diag)
+  }
+
+  return(fit_list)
 }
 
-# conducts the model fit itself
+
+#' function to fit the model
+#'
+#' @param data data
+#' @param initial_mass initial mass variable
+#' @param removal_mass removal mass variable
+#' @param time time variable
+#' @param group group for random effects
+#' @param model_type 'w' or 'ne'
+#' @param random_effects logical
+#' @param cross_validation logical
+#' @param group_id random effects grouping
+#' @param param_formula formula for parameters i model
+#' @return model output
+#'
 decaymod <- function (data, initial_mass, removal_mass, time, group,
-                      model_type, random_effects, cross_validation = FALSE, group_id = NA,
-                      formula_k = NA, formula_alpha = NA, formula_beta = NA) {
+                      model_type, random_effects,
+                      cross_validation, group_id = NA,
+                      param_formula) {
 
   if (isTRUE(cross_validation)) {
     train <- data[data[, group] != group_id, ]
     test <- data[data[, group] == group_id, ]
 
-    # assign level to each group in the training dataset (as now has one fewer item)
-    train$group_level <- as.factor(as.numeric(as.factor(as.character(train[, group]))))
-
-    # number of levels
-    n_train_levels <- length(unique(train$group_level))
-
-    if (model_type == 'ne') {
-      X <- make_matrix(model_type = 'ne', X_type = 'train', n_train_levels. = n_train_levels,
-                       train. = train, formula_k. = formula_k)
-      X_test <- make_matrix(model_type = 'ne', X_type = 'test', n_train_levels. = n_train_levels,
-                            test. = test, formula_k. = formula_k)
-
-      # for model without random effects
-      if (!isTRUE(random_effects)) {
-        fit <- ne_CV_noRE_stan(mT = train[, removal_mass],
-                               mT_test = test[, removal_mass],
-                               m0 = train[, initial_mass],
-                               m0_test = test[, initial_mass],
-                               time = train[, time],
-                               time_test = test[, time],
-                               sp = as.numeric(as.factor(train$group_level)),
-                               J = n_train_levels,
-                               X = X,
-                               X_test = X_test)
-      }
-
-      # for model with random effects
-      if (isTRUE(random_effects)) {
-        fit <- ne_CV_RE_stan(mT = train[, removal_mass],
-                             mT_test = test[, removal_mass],
-                             m0 = train[, initial_mass],
-                             m0_test = test[, initial_mass],
-                             time = train[, time],
-                             time_test = test[, time],
-                             sp = as.numeric(as.factor(train$group_level)),
-                             J = n_train_levels,
-                             X = X,
-                             X_test = X_test)
-      }
-    }
-
-    if (model_type == 'w') {
-      X_alpha <- make_matrix(model_type = 'w', X_type = 'train', n_train_levels. = n_train_levels,
-                             train. = train, formula_alpha. = formula_alpha)
-      X_beta <- make_matrix(model_type = 'w', X_type = 'train', n_train_levels. = n_train_levels,
-                            train. = train, formula_beta. = formula_beta)
-      X_alpha_test <- make_matrix(model_type = 'w', X_type = 'test', n_train_levels. = n_train_levels,
-                                  test. = test, formula_alpha. = formula_alpha)
-      X_beta_test <- make_matrix(model_type = 'w', X_type = 'test', n_train_levels. = n_train_levels,
-                                 test. = test, formula_beta. = formula_beta)
-
-      # for weibull model without random effects
-      if (!isTRUE(random_effects)) {
-        fit <- w_CV_noRE_stan(mT = train[, removal_mass],
-                              mT_test = test[, removal_mass],
-                              m0 = train[, initial_mass],
-                              m0_test = test[, initial_mass],
-                              time = train[, time],
-                              time_test = test[, time],
-                              sp = as.numeric(as.factor(train$group_level)),
-                              J = n_train_levels,
-                              X_alpha = X_alpha,
-                              X_alpha_test = X_alpha_test,
-                              X_beta = X_beta,
-                              X_beta_test = X_beta_test)
-      }
-
-      # for weibull model with random effects
-      if (isTRUE(random_effects)) {
-        fit <- w_CV_RE_stan(mT = train[, removal_mass],
-                            mT_test = test[, removal_mass],
-                            m0 = train[, initial_mass],
-                            m0_test = test[, initial_mass],
-                            time = train[, time],
-                            time_test = test[, time],
-                            sp = as.numeric(as.factor(train$group_level)),
-                            J = n_train_levels,
-                            X_alpha = X_alpha,
-                            X_alpha_test = X_alpha_test,
-                            X_beta = X_beta,
-                            X_beta_test = X_beta_test)
-      }
-    }
+    mT_test <- test[, removal_mass]
+    m0_test <- test[, initial_mass]
+    time_test <- test[, time]
+    X_test <- unique(model.matrix(as.formula(param_formula), test))
+    X_beta_test <- unique(model.matrix(as.formula('~ 1'), test))
   }
 
   if(!isTRUE(cross_validation)) {
-
     train <- data
+  }
 
-    # assign level to each group in the training dataset (as now has one fewer item)
-    train$group_level <- as.factor(as.numeric(as.factor(as.character(train[, group]))))
+  # number of levels
+  # assign level to each group in the training dataset (as now has one fewer item)
+  train$group_level <- as.factor(as.numeric(as.factor(as.character(train[, group]))))
 
-    # number of levels
-    n_train_levels <- length(unique(train$group_level))
+  J <- length(unique(train$group_level))
 
-    if (model_type == 'ne') {
-      X <- make_matrix(model_type = 'ne', X_type = 'train', n_train_levels. = n_train_levels,
-                       train. = train, formula_k. = formula_k)
+  # assign level to each group in the training dataset (as now has one fewer item)
+  sp <- as.numeric(as.factor(train$group_level))
 
-      if (isTRUE(random_effects)) {
-        sim_df <- data.frame(m0_sim = rep(log(4100), 5800),
-                             time_sim = rep(seq(0, 0.7, length.out = 200), 29),
-                             sp_sim = rep(1:29, each = 200))
+  mT <- train[, removal_mass]
+  m0 <- train[, initial_mass]
+  time <- train[, time]
 
-        fit <- ne_noCV_RE_stan(mT = train[, removal_mass],
-                               m0 = train[, initial_mass],
-                               time = train[, time],
-                               sp = as.numeric(as.factor(train$group_level)),
-                               J = n_train_levels,
-                               X = X,
-                               m0_sim = sim_df$m0_sim,
-                               time_sim = sim_df$time_sim,
-                               sp_sim = sim_df$sp_sim)
-      }
+  X_null <- as.matrix(model.matrix(as.formula('~ 1'), train)[1:J,])
 
-      if (!isTRUE(random_effects)) {
-        fit <- ne_noCV_noRE_stan(mT = train[, removal_mass],
-                                 m0 = train[, initial_mass],
-                                 time = train[, time],
-                                 sp = as.numeric(as.factor(train$group_level)),
-                                 J = n_train_levels,
-                                 X = X)
-      }
-    }
+  if (param_formula == '~1' | param_formula == '~ 1') {
+    X <- X_null
+  }
+  else {
+    X <- unique(model.matrix(as.formula(as.character(param_formula)), train))
+  }
 
-    if (model_type == 'w') {
-      X_alpha <- make_matrix(model_type = 'w', X_type = 'train', n_train_levels. = n_train_levels,
-                             train. = train, formula_alpha. = formula_alpha)
-      X_beta <- make_matrix(model_type = 'w', X_type = 'train', n_train_levels. = n_train_levels,
-                            train. = train, formula_beta. = formula_beta)
+  sim_df <- data.frame(m0_sim = rep(log(4100), 5800),
+                       time_sim = rep(seq(0, 0.7, length.out = 200), 29),
+                       sp_sim = rep(1:29, each = 200))
 
-      if (isTRUE(random_effects)) {
-        sim_df <- data.frame(m0_sim = rep(log(4100), 5800),
-                             time_sim = rep(seq(0, 0.7, length.out = 200), 29),
-                             sp_sim = rep(1:29, each = 200))
+  if (model_type == 'ne' & isTRUE(cross_validation) & !isTRUE(random_effects)) {
+    fit <- ne_CV_noRE_stan(mT, mT_test, m0, m0_test, time,
+                           time_test, sp, J, X, X_test)
+  }
 
-        fit <- w_noCV_RE_stan(mT = train[, removal_mass],
-                              m0 = train[, initial_mass],
-                              time = train[, time],
-                              sp = as.numeric(as.factor(train$group_level)),
-                              J = n_train_levels,
-                              X_alpha = X_alpha,
-                              X_beta = X_beta,
-                              m0_sim = sim_df$m0_sim,
-                              time_sim = sim_df$time_sim,
-                              sp_sim = sim_df$sp_sim)
-      }
+  if (model_type == 'ne' & isTRUE(cross_validation) & isTRUE(random_effects)) {
+    fit <- ne_CV_RE_stan(mT, mT_test, m0, m0_test, time,
+                         time_test, sp, J, X, X_test)
+  }
 
-      if (!isTRUE(random_effects)) {
-        fit <- w_noCV_noRE_stan(mT = train[, removal_mass],
-                                m0 = train[, initial_mass],
-                                time = train[, time],
-                                sp = as.numeric(as.factor(train$group_level)),
-                                J = n_train_levels,
-                                X_alpha = X_alpha,
-                                X_beta = X_beta)
-      }
-    }
+  if (model_type == 'ne' & !isTRUE(cross_validation) & !isTRUE(random_effects)) {
+    fit <- ne_noCV_noRE_stan(mT, m0, time, sp, J, X)
+  }
+
+  if (model_type == 'ne' & !isTRUE(cross_validation) & isTRUE(random_effects)) {
+    fit <- ne_noCV_RE_stan(mT, m0, time, sp, J, X,
+                           m0_sim = sim_df$m0_sim,
+                           time_sim = sim_df$time_sim,
+                           sp_sim = sim_df$sp_sim)
+  }
+
+  if (model_type == 'w' & isTRUE(cross_validation) & !isTRUE(random_effects)) {
+    fit <- w_CV_noRE_stan(mT, mT_test, m0, m0_test, time,
+                          time_test, sp, J,
+                          X_alpha = X, X_alpha_test = X_test,
+                          X_beta = X_null, X_beta_test)
+  }
+
+  if (model_type == 'w' & isTRUE(cross_validation) & isTRUE(random_effects)) {
+    fit <- w_CV_RE_stan(mT, mT_test, m0, m0_test, time,
+                        time_test, sp, J,
+                        X_alpha = X, X_alpha_test = X_test,
+                        X_beta = X_null, X_beta_test)
+  }
+
+  if (model_type == 'w' & !isTRUE(cross_validation) & !isTRUE(random_effects)) {
+    fit <- w_noCV_noRE_stan(mT, m0, time, sp, J, X_alpha = X, X_beta = X_null)
+  }
+
+  if (model_type == 'w' & !isTRUE(cross_validation) & isTRUE(random_effects)) {
+    fit <- w_noCV_RE_stan(mT, m0, time, sp, J, X_alpha = X,
+                          X_beta = X_null,
+                          m0_sim = sim_df$m0_sim,
+                          time_sim = sim_df$time_sim,
+                          sp_sim = sim_df$sp_sim)
   }
 
   fit
 }
-
-# creates model matrix
-make_matrix <- function (model_type, X_type, n_train_levels. = n_train_levels,
-                         train. = NULL, test. = NULL, formula_k. = NULL,
-                         formula_alpha. = NULL, formula_beta. = NULL) {
-
-  # negative exponential model matrices
-  if (X_type == 'train') {
-    if (model_type == 'ne') {
-      if (formula_k. == '~1' | formula_k. == '~ 1') {
-        mat <- as.matrix(model.matrix(as.formula(formula_k.), train.)[1:n_train_levels.,])
-      }
-      else {
-        mat <- unique(model.matrix(as.formula(formula_k.), train.))
-      }
-    }
-
-    if (model_type == 'w' & !is.null(formula_alpha.)) {
-
-      # create alpha model matrix for training data
-      if (formula_alpha. == '~1' | formula_alpha. == '~ 1') {
-        mat <- as.matrix(model.matrix(as.formula(formula_alpha.), train.)[1:n_train_levels., ])
-      }
-      else {
-        mat <- unique(model.matrix(as.formula(formula_alpha.), train.))
-      }
-    }
-
-    if (model_type == 'w' & !is.null(formula_beta.)) {
-
-      # create beta model matrix for training data
-      if (formula_beta. == '~1' | formula_beta. == '~ 1') {
-        mat <- as.matrix(model.matrix(as.formula(formula_beta.), train.)[1:n_train_levels., ])
-      }
-      else {
-        mat <- unique(model.matrix(as.formula(formula_beta.), train.))
-      }
-    }
-  }
-
-  if (X_type == 'test') {
-    if (model_type == 'ne') mat <- unique(model.matrix(as.formula(formula_k.), test.))
-    if (model_type == 'w') {
-      if (!is.null(formula_alpha.)) mat <- unique(model.matrix(as.formula(formula_alpha.), test.))
-      if (!is.null(formula_beta.)) mat <- unique(model.matrix(as.formula(formula_beta.), test.))
-    }
-  }
-
-  mat
-}
-
