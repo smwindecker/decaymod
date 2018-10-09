@@ -33,3 +33,4 @@ src/stan_files/*.cc
 src/stan_files/*.hpp
 man/*.Rd
 src/*.o
+analysis.R
