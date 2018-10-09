@@ -42,13 +42,11 @@ model {
 generated quantities {
 
   vector[N] mT_fit;
-
-  {
   vector[J] alpha_fit;
   vector[J] beta_fit;
 
   alpha_fit = param(b_alpha, X_alpha, P_alpha, J);
   beta_fit = param(b_beta, X_beta, P_beta, J);
   mT_fit = weibull_fit_rng(N, m0, time, beta_fit, alpha_fit, sp, sigma_obs);
-  }
+
 }

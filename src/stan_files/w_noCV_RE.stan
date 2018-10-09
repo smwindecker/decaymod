@@ -14,6 +14,11 @@ data {
   matrix[J, P_alpha] X_alpha;             // design matrix for alpha effects
   matrix[J, P_beta] X_beta;               // design matrix for alpha effects
   int<lower=1, upper=J> sp[N];            // species id
+
+  int<lower=1> N_sim;                         // number of data points
+  vector[N_sim] m0_sim;
+  vector<lower=0>[N_sim] time_sim;                   // time
+  int<lower=1, upper=J> sp_sim[N_sim];            // species id
 }
 
 parameters {
@@ -49,14 +54,12 @@ model {
 
 generated quantities {
 
-  vector[N] mT_fit;
-
-  {
+  vector[N_sim] mT_sim;
   vector[J] alpha_fit;
   vector[J] beta_fit;
 
   alpha_fit = param_re(b_alpha, X_alpha, P_alpha, J, a_sp_alpha);
   beta_fit = param_re(b_beta, X_beta, P_beta, J, a_sp_beta);
-  mT_fit = weibull_fit_rng(N, m0, time, beta_fit, alpha_fit, sp, sigma_obs);
-  }
+  mT_sim = weibull_sim_rng(N_sim, m0_sim, time_sim, beta_fit, alpha_fit, sp_sim);
+
 }

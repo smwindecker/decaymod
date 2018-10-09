@@ -21,6 +21,27 @@ vector negexp_fit_rng(int N, vector m0, vector time, vector k_fit, int[] sp, rea
 }
 
 /**
+  * Create negative exponential fit for simulated data
+  *
+  * @param N_sim number of simulated data
+  * @param m0_sim simulated m0
+  * @param time_sim simulated time data
+  * @param k_fit fit k
+  * @param sp_sim species' number
+  * @return A vector of parameter estimates
+  */
+vector negexp_sim_rng(int N_sim, vector m0_sim, vector time_sim, vector k_fit, int[] sp_sim) {
+
+  vector[N_sim] mT_sim;
+
+  for (i in 1:N_sim) {
+    mT_sim[i] = m0_sim[i] - (k_fit[sp_sim[i]] * time_sim[i]);
+  }
+
+  return mT_sim;
+}
+
+/**
   * Create negative exponential predictions for test datapoints
   *
   * @param N_test number of test data

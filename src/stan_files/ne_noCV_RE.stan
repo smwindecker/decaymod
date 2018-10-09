@@ -12,6 +12,11 @@ data {
   int<lower=1> J;                         // number of species
   matrix[J, P] X;         // design matrix for alpha effects
   int<lower=1, upper=J> sp[N];            // species id
+
+  int<lower=1> N_sim;                         // number of data points
+  vector[N_sim] m0_sim;
+  vector<lower=0>[N_sim] time_sim;                   // time
+  int<lower=1, upper=J> sp_sim[N_sim];            // species id
 }
 
 parameters {
@@ -37,12 +42,10 @@ model {
 
 generated quantities {
 
-  vector[N] mT_fit;
-
-  {
+  vector[N_sim] mT_sim;
   vector[J] k_fit;
 
   k_fit = param_re(b, X, P, J, a);
-  mT_fit = negexp_fit_rng(N, m0, time, k_fit, sp, sigma_obs);
-  }
+  mT_sim = negexp_sim_rng(N_sim, m0_sim, time_sim, k_fit, sp_sim);
+
 }

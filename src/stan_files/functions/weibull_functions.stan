@@ -24,9 +24,9 @@ vector weibull(int N, vector m0, vector time, vector beta, vector alpha, int[] s
 /**
   * Create weibull fit for data
   *
-  * @param N number of test data
-  * @param m0 initial mass of test data
-  * @param time time of test data
+  * @param N number of data
+  * @param m0 initial mass of data
+  * @param time time of data
   * @param beta_fit fit beta
   * @param alpha_fit fit alpha
   * @param sp species' number
@@ -42,6 +42,28 @@ vector weibull_fit_rng(int N, vector m0, vector time, vector beta_fit, vector al
   }
 
   return mT_fit;
+}
+
+/**
+  * Create weibull predictions for simulated data
+  *
+  * @param N_sim number of simulated data
+  * @param m0_sim simulated m0
+  * @param time_sim simulated time data
+  * @param beta_fit fit beta
+  * @param alpha_fit fit alpha
+  * @param sp_sim species' number in simulated dataset
+  * @return A vector of parameter estimates
+  */
+vector weibull_sim_rng(int N_sim, vector m0_sim, vector time_sim, vector beta_fit, vector alpha_fit, int[] sp_sim) {
+
+  vector[N_sim] mT_sim;
+
+  for (i in 1:N_sim) {
+    mT_sim[i] = m0_sim[i] - (time_sim[i] / beta_fit[sp_sim[i]])^alpha_fit[sp_sim[i]];
+  }
+
+  return mT_sim;
 }
 
 /**

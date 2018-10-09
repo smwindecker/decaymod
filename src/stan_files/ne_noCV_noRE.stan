@@ -34,11 +34,9 @@ model {
 generated quantities {
 
   vector[N] mT_fit;
-
-  {
   vector[J] k_fit;
 
   k_fit = param(b, X, P, J);
   mT_fit = negexp_fit_rng(N, m0, time, k_fit, sp, sigma_obs);
-  }
+
 }
