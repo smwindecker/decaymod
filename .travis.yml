@@ -9,6 +9,7 @@ latex: true
 env:
   matrix:
     - CXX_OLEVEL=2 CXX=clang++
+    - CXX14=g++
 
 before_install:
   - mkdir -p ~/.R/
@@ -18,7 +19,6 @@ before_install:
   - if [[ $CXX = "clang++" ]] ;  then export CLANG_EXTRA_ARG=" -Qunused-arguments -fcolor-diagnostics " ; fi
   - sed -i.bak "s/ g++/ ${CXX}${CLANG_EXTRA_ARG}/" ~/.R/Makevars
   - sed -i.bak "s/O[0-3]/O$CXX_OLEVEL/" ~/.R/Makevars
-  - sed -i 's|CXX_STD = CXX14||' src/Makevars
 
 script:
   - |
