@@ -255,7 +255,7 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
     m0_test <- test[, initial_mass]
     time_test <- test[, time]
     X_test <- unique(model.matrix(as.formula(param_formula), test))
-    X_beta_test <- unique(model.matrix(as.formula('~ 1'), test))
+    X_null_test <- unique(model.matrix(as.formula('~ 1'), test))
   }
 
   if(!isTRUE(cross_validation)) {
@@ -309,27 +309,61 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
                            sp_sim = sim_df$sp_sim)
   }
 
-  if (model_type == 'w' & isTRUE(cross_validation) & !isTRUE(random_effects)) {
+  if (model_type == 'w' & isTRUE(cross_validation) & !isTRUE(random_effects)
+      & trait_param == 'alpha') {
     fit <- w_CV_noRE_stan(mT, mT_test, m0, m0_test, time,
                           time_test, sp, J,
                           X_alpha = X, X_alpha_test = X_test,
-                          X_beta = X_null, X_beta_test)
+                          X_beta = X_null, X_beta_test = X_null_test)
   }
 
-  if (model_type == 'w' & isTRUE(cross_validation) & isTRUE(random_effects)) {
+  if (model_type == 'w' & isTRUE(cross_validation) & !isTRUE(random_effects)
+      & trait_param == 'beta') {
+    fit <- w_CV_noRE_stan(mT, mT_test, m0, m0_test, time,
+                          time_test, sp, J,
+                          X_alpha = X_null, X_alpha_test = X_null_test,
+                          X_beta = X, X_beta_test = X_test)
+  }
+
+  if (model_type == 'w' & isTRUE(cross_validation) & isTRUE(random_effects)
+      & trait_param == 'alpha') {
     fit <- w_CV_RE_stan(mT, mT_test, m0, m0_test, time,
                         time_test, sp, J,
                         X_alpha = X, X_alpha_test = X_test,
-                        X_beta = X_null, X_beta_test)
+                        X_beta = X_null, X_beta_test = X_null_test)
   }
 
-  if (model_type == 'w' & !isTRUE(cross_validation) & !isTRUE(random_effects)) {
+  if (model_type == 'w' & isTRUE(cross_validation) & isTRUE(random_effects)
+      & trait_param == 'beta') {
+    fit <- w_CV_RE_stan(mT, mT_test, m0, m0_test, time,
+                        time_test, sp, J,
+                        X_alpha = X_null, X_alpha_test = X_null_test,
+                        X_beta = X, X_beta_test = X_test)
+  }
+
+  if (model_type == 'w' & !isTRUE(cross_validation) & !isTRUE(random_effects)
+      & trait_param == 'alpha') {
     fit <- w_noCV_noRE_stan(mT, m0, time, sp, J, X_alpha = X, X_beta = X_null)
   }
 
-  if (model_type == 'w' & !isTRUE(cross_validation) & isTRUE(random_effects)) {
+  if (model_type == 'w' & !isTRUE(cross_validation) & !isTRUE(random_effects)
+      & trait_param == 'beta') {
+    fit <- w_noCV_noRE_stan(mT, m0, time, sp, J, X_alpha = X_null, X_beta = X)
+  }
+
+  if (model_type == 'w' & !isTRUE(cross_validation) & isTRUE(random_effects)
+      & trait_param == 'alpha') {
     fit <- w_noCV_RE_stan(mT, m0, time, sp, J, X_alpha = X,
                           X_beta = X_null,
+                          m0_sim = sim_df$m0_sim,
+                          time_sim = sim_df$time_sim,
+                          sp_sim = sim_df$sp_sim)
+  }
+
+  if (model_type == 'w' & !isTRUE(cross_validation) & isTRUE(random_effects)
+      & trait_param == 'beta') {
+    fit <- w_noCV_RE_stan(mT, m0, time, sp, J, X_alpha = X_null,
+                          X_beta = X,
                           m0_sim = sim_df$m0_sim,
                           time_sim = sim_df$time_sim,
                           sp_sim = sim_df$sp_sim)
