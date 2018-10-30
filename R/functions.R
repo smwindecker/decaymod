@@ -8,13 +8,16 @@
 #' @param cv_cluster if cross-validation to be used, what to group by
 #' @param random_effects logical
 #' @param fixed_effects list of trait combinations
+#' @param trait_param null or both
+#' @importFrom arrangements combinations
 #' @return jobs list
 #'
 create_jobs <- function (model_type,
                          data,
                          cv_cluster = NULL,
                          random_effects = TRUE,
-                         fixed_effects = NULL) {
+                         fixed_effects = NULL,
+                         trait_param = NULL) {
 
   if (is.null(fixed_effects)) {
     param_formula <- list('~ 1')
@@ -24,8 +27,8 @@ create_jobs <- function (model_type,
     param_formula <- lapply(fixed_effects, mypaste)
   }
 
-  # for rows that are FE yes. add on like this
-  if (!is.null(cv_cluster)) {
+  # for rows that are FE and traits on one only
+  if (!is.null(cv_cluster) & is.null(trait_param)) {
 
     clusters <- unique(data[, cv_cluster])
     tmp <- lapply(param_formula, expand_models, clusters)
@@ -35,17 +38,43 @@ create_jobs <- function (model_type,
                    model_type = model_type,
                    random_effects = random_effects,
                    cv = TRUE)
-
   }
 
-  if (is.null(cv_cluster)) {
+  # not FE traits on one only
+  if (is.null(cv_cluster) & is.null(trait_param)) {
 
     jobs <- lapply(param_formula, model_details,
                    model_type = model_type,
                    random_effects = random_effects,
                    cv = FALSE)
-
   }
+
+  # for rows that are FE traits on both
+  if (!is.null(fixed_effects) & !is.null(trait_param)) {
+    unlist_formulas <- unlist(param_formula)
+    ext_param_formulas <- arrangements::combinations(x = unlist_formulas, k = 2, replace = TRUE, layout = 'list')
+  }
+
+  if (!is.null(cv_cluster) & !is.null(trait_param)) {
+
+    clusters <- unique(data[, cv_cluster])
+    tmp <- lapply(ext_param_formulas, expand_models, clusters, both = TRUE)
+    tmp_expanded <- unlist(tmp, recursive = FALSE)
+
+    jobs <- lapply(tmp_expanded, model_details,
+                   model_type = model_type,
+                   random_effects = random_effects,
+                   cv = TRUE)
+  }
+
+  if (is.null(cv_cluster) & !is.null(trait_param)) {
+
+    jobs <- lapply(ext_param_formulas, model_details,
+                   model_type = model_type,
+                   random_effects = random_effects,
+                   cv = FALSE)
+  }
+
 
   return(jobs)
 }
@@ -88,16 +117,30 @@ model_details <- function (param_formula, model_type, random_effects, cv) {
 #'
 #' @param input fixed effect model
 #' @param clusters list of clusters for cross validation
+#' @param both whether traits on one or both traits
 #' @return model dataframe expanded for cross val levels
 #'
-expand_models <- function (input, clusters) {
+expand_models <- function (input, clusters, both = FALSE) {
 
   # repeat each model n = number of species times
 
-  expand <- expand.grid(cluster = clusters,
-                        param_formula = input)
+  if (!isTRUE(both)) {
+    expand <- expand.grid(cluster = clusters,
+                          param_formula = input)
 
-  expand$param_formula <- as.character(expand$param_formula)
+    expand$param_formula <- as.character(expand$param_formula)
+  }
+
+
+  if (isTRUE(both)) {
+    expand <- expand.grid(cluster = clusters,
+                          alpha_formula = input[1],
+                          beta_formula = input[2])
+
+    expand$alpha_formula <- as.character(expand$alpha_formula)
+    expand$beta_formula <- as.character(expand$beta_formula)
+  }
+
 
   list <- split(expand, seq(nrow(expand)))
 
@@ -262,7 +305,7 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
     X_null_test <- unique(model.matrix(as.formula('~ 1'), test))
   }
 
-  if(!isTRUE(cross_validation)) {
+  if (!isTRUE(cross_validation)) {
     train <- data
   }
 
@@ -284,8 +327,11 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
   if (param_formula == '~1' | param_formula == '~ 1') {
     X <- X_null
   }
-  else {
+  if (param_formula == 'alpha' | param_formula == 'beta' & param_formula != '~ 1') {
     X <- unique(model.matrix(as.formula(as.character(param_formula)), train))
+  }
+  if (trait_param == 'both') {
+
   }
 
   sim_df <- data.frame(m0_sim = rep(log(4100), 5800),
@@ -313,6 +359,7 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
                            sp_sim = sim_df$sp_sim)
   }
 
+  # w, cv, no re
   if (model_type == 'w' & isTRUE(cross_validation) & !isTRUE(random_effects)
       & trait_param == 'alpha') {
     fit <- w_CV_noRE_stan(mT, mT_test, m0, m0_test, time,
@@ -329,6 +376,15 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
                           X_beta = X, X_beta_test = X_test)
   }
 
+  if (model_type == 'w' & isTRUE(cross_validation) & !isTRUE(random_effects)
+      & trait_param == 'both') {
+    fit <- w_CV_noRE_stan(mT, mT_test, m0, m0_test, time,
+                          time_test, sp, J,
+                          X_alpha = X, X_alpha_test = X_test,
+                          X_beta = X, X_beta_test = X_test)
+  }
+
+  # w, cv, re
   if (model_type == 'w' & isTRUE(cross_validation) & isTRUE(random_effects)
       & trait_param == 'alpha') {
     fit <- w_CV_RE_stan(mT, mT_test, m0, m0_test, time,
@@ -345,6 +401,15 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
                         X_beta = X, X_beta_test = X_test)
   }
 
+  if (model_type == 'w' & isTRUE(cross_validation) & isTRUE(random_effects)
+      & trait_param == 'both') {
+    fit <- w_CV_RE_stan(mT, mT_test, m0, m0_test, time,
+                        time_test, sp, J,
+                        X_alpha = X, X_alpha_test = X_test,
+                        X_beta = X, X_beta_test = X_test)
+  }
+
+  # w, no cv, no re
   if (model_type == 'w' & !isTRUE(cross_validation) & !isTRUE(random_effects)
       & trait_param == 'alpha') {
     fit <- w_noCV_noRE_stan(mT, m0, time, sp, J, X_alpha = X, X_beta = X_null)
@@ -355,6 +420,12 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
     fit <- w_noCV_noRE_stan(mT, m0, time, sp, J, X_alpha = X_null, X_beta = X)
   }
 
+  if (model_type == 'w' & !isTRUE(cross_validation) & !isTRUE(random_effects)
+      & trait_param == 'both') {
+    fit <- w_noCV_noRE_stan(mT, m0, time, sp, J, X_alpha = X, X_beta = X)
+  }
+
+  # w, no cv, re
   if (model_type == 'w' & !isTRUE(cross_validation) & isTRUE(random_effects)
       & trait_param == 'alpha') {
     fit <- w_noCV_RE_stan(mT, m0, time, sp, J, X_alpha = X,
@@ -367,6 +438,15 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
   if (model_type == 'w' & !isTRUE(cross_validation) & isTRUE(random_effects)
       & trait_param == 'beta') {
     fit <- w_noCV_RE_stan(mT, m0, time, sp, J, X_alpha = X_null,
+                          X_beta = X,
+                          m0_sim = sim_df$m0_sim,
+                          time_sim = sim_df$time_sim,
+                          sp_sim = sim_df$sp_sim)
+  }
+
+  if (model_type == 'w' & !isTRUE(cross_validation) & isTRUE(random_effects)
+      & trait_param == 'both') {
+    fit <- w_noCV_RE_stan(mT, m0, time, sp, J, X_alpha = X,
                           X_beta = X,
                           m0_sim = sim_df$m0_sim,
                           time_sim = sim_df$time_sim,
