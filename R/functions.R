@@ -116,11 +116,13 @@ expand_models <- function (input, clusters) {
 #' @param group group for random effects
 #' @param n_cores number of cores to run model on
 #' @param save_fit logical
+#' @param trait_param alpha or beta - traits on which one?
 #' @return all models outputs
 #'
 run_models <- function (jobs_list, data, initial_mass,
                         removal_mass, time, group,
-                        n_cores, save_fit = FALSE) {
+                        n_cores, save_fit = FALSE,
+                        trait_param) {
 
   doMC::registerDoMC(n_cores)
 
@@ -129,7 +131,8 @@ run_models <- function (jobs_list, data, initial_mass,
   # so my decaymod outputs the fit. i want to append it to the list.
   model_output <- foreach::foreach(i = 1:length(jobs_list)) %dopar% {
     output_i <- evaluate_decaymod(jobs_list[[i]], data, initial_mass,
-                                  removal_mass, time, group, save_fit)
+                                  removal_mass, time, group, save_fit,
+                                  trait_param)
     return(output_i)
   }
 
@@ -168,8 +171,8 @@ run_models <- function (jobs_list, data, initial_mass,
 #' @param save_fit logical
 #' @return evaluate model for individual list item
 #'
-evaluate_decaymod <- function (df, data, initial_mass,
-                               removal_mass, time, group, save_fit) {
+evaluate_decaymod <- function (df, data, initial_mass, removal_mass,
+                               time, group, save_fit, trait_param) {
 
   if ('cluster' %in% colnames(df)) {
     cross_validation <- TRUE
@@ -188,7 +191,8 @@ evaluate_decaymod <- function (df, data, initial_mass,
                   random_effects = df$random_effects,
                   cross_validation = cross_validation,
                   group_id = group_id,
-                  param_formula = df$param_formula)
+                  param_formula = df$param_formula,
+                  trait_param = trait_param)
 
   # diagnostics
   fit_summary <- rstan::summary(fit)$summary
@@ -245,7 +249,7 @@ evaluate_decaymod <- function (df, data, initial_mass,
 decaymod <- function (data, initial_mass, removal_mass, time, group,
                       model_type, random_effects,
                       cross_validation, group_id = NA,
-                      param_formula) {
+                      param_formula, trait_param) {
 
   if (isTRUE(cross_validation)) {
     train <- data[data[, group] != group_id, ]
