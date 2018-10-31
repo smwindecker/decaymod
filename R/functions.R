@@ -327,12 +327,8 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
 
   if (param_formula == '~1' | param_formula == '~ 1') {
     X <- X_null
-  }
-  if (param_formula == 'alpha' | param_formula == 'beta' & param_formula != '~ 1') {
+  } else {
     X <- unique(model.matrix(as.formula(as.character(param_formula)), train))
-  }
-  if (trait_param == 'both') {
-
   }
 
   sim_df <- data.frame(m0_sim = rep(log(4100), 5800),
