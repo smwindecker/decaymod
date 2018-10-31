@@ -9,7 +9,7 @@
 #' @param random_effects logical
 #' @param fixed_effects list of trait combinations
 #' @param trait_param null or both
-#' @importFrom arrangements combinations
+#' @importFrom gtools combinations
 #' @return jobs list
 #'
 create_jobs <- function (model_type,
@@ -52,7 +52,8 @@ create_jobs <- function (model_type,
   # for rows that are FE traits on both
   if (!is.null(fixed_effects) & !is.null(trait_param)) {
     unlist_formulas <- unlist(param_formula)
-    ext_param_formulas <- arrangements::combinations(x = unlist_formulas, k = 2, replace = TRUE, layout = 'list')
+    x <- gtools::combinations(n = length(unlist_formulas), r = 2, v = unlist_formulas, repeats.allowed = TRUE)
+    ext_param_formulas <- tapply(x, rep(1:nrow(x), ncol(x)), function(i) i)
   }
 
   if (!is.null(cv_cluster) & !is.null(trait_param)) {
