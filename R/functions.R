@@ -226,17 +226,34 @@ evaluate_decaymod <- function (df, data, initial_mass, removal_mass,
     group_id <- NA
   }
 
-  fit <- decaymod(data = data,
-                  initial_mass = initial_mass,
-                  removal_mass = removal_mass,
-                  time = time,
-                  group = group,
-                  model_type = df$model_type,
-                  random_effects = df$random_effects,
-                  cross_validation = cross_validation,
-                  group_id = group_id,
-                  param_formula = df$param_formula,
-                  trait_param = trait_param)
+  if (trait_param != 'both') {
+    fit <- decaymod(data = data,
+                    initial_mass = initial_mass,
+                    removal_mass = removal_mass,
+                    time = time,
+                    group = group,
+                    model_type = df$model_type,
+                    random_effects = df$random_effects,
+                    cross_validation = cross_validation,
+                    group_id = group_id,
+                    param_formula = df$param_formula,
+                    trait_param = trait_param)
+  }
+
+  if (trait_param == 'both') {
+    fit <- decaymod(data = data,
+                    initial_mass = initial_mass,
+                    removal_mass = removal_mass,
+                    time = time,
+                    group = group,
+                    model_type = df$model_type,
+                    random_effects = df$random_effects,
+                    cross_validation = cross_validation,
+                    group_id = group_id,
+                    alpha_formula = df$alpha_formula,
+                    beta_formula = df$beta_formula,
+                    trait_param = trait_param)
+  }
 
   # diagnostics
   fit_summary <- rstan::summary(fit)$summary
@@ -293,7 +310,8 @@ evaluate_decaymod <- function (df, data, initial_mass, removal_mass,
 decaymod <- function (data, initial_mass, removal_mass, time, group,
                       model_type, random_effects,
                       cross_validation, group_id = NA,
-                      param_formula, trait_param) {
+                      param_formula = NULL, alpha_formula = NULL,
+                      beta_formula = NULL, trait_param) {
 
   if (isTRUE(cross_validation)) {
     train <- data[data[, group] != group_id, ]
@@ -302,8 +320,14 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
     mT_test <- test[, removal_mass]
     m0_test <- test[, initial_mass]
     time_test <- test[, time]
-    X_test <- unique(model.matrix(as.formula(param_formula), test))
+
     X_null_test <- unique(model.matrix(as.formula('~ 1'), test))
+
+    if (!is.null(param_formula)) X_test <- unique(model.matrix(as.formula(param_formula), test))
+    if (is.null(param_formula)) {
+      X_alpha_test <- unique(model.matrix(as.formula(alpha_formula), test))
+      X_beta_test <- unique(model.matrix(as.formula(beta_formula), test))
+    }
   }
 
   if (!isTRUE(cross_validation)) {
@@ -318,18 +342,28 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
 
   # assign level to each group in the training dataset (as now has one fewer item)
   sp <- as.numeric(as.factor(train$group_level))
-
   mT <- train[, removal_mass]
   m0 <- train[, initial_mass]
   time <- train[, time]
 
   X_null <- as.matrix(model.matrix(as.formula('~ 1'), train)[1:J,])
 
-  if (param_formula == '~1' | param_formula == '~ 1') {
-    X <- X_null
-  } else {
+  if (!is.null(param_formula)) {
     X <- unique(model.matrix(as.formula(as.character(param_formula)), train))
   }
+  if (is.null(param_formula)) {
+    X_alpha <- unique(model.matrix(as.formula(as.character(alpha_formula)), train))
+    X_beta <- unique(model.matrix(as.formula(as.character(beta_formula)), train))
+  }
+
+
+  # if (param_formula == '~1' | param_formula == '~ 1') {
+  #   X <- X_null
+  # } else {
+  #
+  # }
+
+
 
   sim_df <- data.frame(m0_sim = rep(log(4100), 5800),
                        time_sim = rep(seq(0, 0.7, length.out = 200), 29),
@@ -377,8 +411,8 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
       & trait_param == 'both') {
     fit <- w_CV_noRE_stan(mT, mT_test, m0, m0_test, time,
                           time_test, sp, J,
-                          X_alpha = X, X_alpha_test = X_test,
-                          X_beta = X, X_beta_test = X_test)
+                          X_alpha = X_alpha, X_alpha_test = X_alpha_test,
+                          X_beta = X_beta, X_beta_test = X_beta_test)
   }
 
   # w, cv, re
@@ -402,8 +436,8 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
       & trait_param == 'both') {
     fit <- w_CV_RE_stan(mT, mT_test, m0, m0_test, time,
                         time_test, sp, J,
-                        X_alpha = X, X_alpha_test = X_test,
-                        X_beta = X, X_beta_test = X_test)
+                        X_alpha = X_alpha, X_alpha_test = X_alpha_test,
+                        X_beta = X_beta, X_beta_test = X_beta_test)
   }
 
   # w, no cv, no re
@@ -419,7 +453,8 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
 
   if (model_type == 'w' & !isTRUE(cross_validation) & !isTRUE(random_effects)
       & trait_param == 'both') {
-    fit <- w_noCV_noRE_stan(mT, m0, time, sp, J, X_alpha = X, X_beta = X)
+    fit <- w_noCV_noRE_stan(mT, m0, time, sp, J, X_alpha = X_alpha,
+                            X_beta = X_beta)
   }
 
   # w, no cv, re
@@ -443,8 +478,8 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
 
   if (model_type == 'w' & !isTRUE(cross_validation) & isTRUE(random_effects)
       & trait_param == 'both') {
-    fit <- w_noCV_RE_stan(mT, m0, time, sp, J, X_alpha = X,
-                          X_beta = X,
+    fit <- w_noCV_RE_stan(mT, m0, time, sp, J, X_alpha = X_alpha,
+                          X_beta = X_beta,
                           m0_sim = sim_df$m0_sim,
                           time_sim = sim_df$time_sim,
                           sp_sim = sim_df$sp_sim)
