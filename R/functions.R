@@ -166,7 +166,7 @@ expand_models <- function (input, clusters, both = FALSE) {
 run_models <- function (jobs_list, data, initial_mass,
                         removal_mass, time, group,
                         n_cores, save_fit = FALSE,
-                        trait_param) {
+                        trait_param = NULL) {
 
   doMC::registerDoMC(n_cores)
 
@@ -355,15 +355,6 @@ decaymod <- function (data, initial_mass, removal_mass, time, group,
     X_alpha <- unique(model.matrix(as.formula(as.character(alpha_formula)), train))
     X_beta <- unique(model.matrix(as.formula(as.character(beta_formula)), train))
   }
-
-
-  # if (param_formula == '~1' | param_formula == '~ 1') {
-  #   X <- X_null
-  # } else {
-  #
-  # }
-
-
 
   sim_df <- data.frame(m0_sim = rep(log(4100), 5800),
                        time_sim = rep(seq(0, 0.7, length.out = 200), 29),
