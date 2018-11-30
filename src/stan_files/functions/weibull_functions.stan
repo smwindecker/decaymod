@@ -113,3 +113,46 @@ real weibull_negloglik(vector mT_test, vector m0_test, vector time_test, real be
   return neg_loglik;
 }
 
+/**
+  * Create weibull predictions for simulated data - sim traits, single time
+  *
+  * @param N_sim number of simulated data
+  * @param m0_sim simulated m0
+  * @param time_sim simulated time data
+  * @param beta_fit fit beta
+  * @param alpha_fit fit alpha
+  * @param sp_sim species' number in simulated dataset
+  * @return A vector of parameter estimates
+  */
+vector weibull_best_sim_rng(int N_sim, real m0_sim, real time_sim, vector beta_fit, vector alpha_fit, int[] sp_sim) {
+
+  vector[N_sim] mT_sim;
+
+  for (i in 1:N_sim) {
+    mT_sim[i] = m0_sim - (time_sim / beta_fit[sp_sim[i]])^alpha_fit[sp_sim[i]];
+  }
+
+  return mT_sim;
+}
+
+/**
+  * Create weibull predictions for simulated data - sim traits, across time
+  *
+  * @param N_sim number of simulated data
+  * @param m0_sim simulated m0
+  * @param time_sim simulated time data
+  * @param beta_fit fit beta
+  * @param alpha_fit fit alpha
+  * @param sp_sim species' number in simulated dataset
+  * @return A vector of parameter estimates
+  */
+vector weibull_sim_traits_rng(int N_sim, real m0_sim, vector time_sim, vector beta_fit, vector alpha_fit, int[] sp_sim) {
+
+  vector[N_sim] mT_sim;
+
+  for (i in 1:N_sim) {
+    mT_sim[i] = m0_sim - (time_sim[i] / beta_fit[sp_sim[i]])^alpha_fit[sp_sim[i]];
+  }
+
+  return mT_sim;
+}
