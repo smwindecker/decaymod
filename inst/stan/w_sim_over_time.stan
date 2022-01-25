@@ -16,10 +16,8 @@ data {
   int<lower=1, upper=J> sp[N];            // species id
 
   int<lower=1> N_sim;                         // number of data points
-  real<lower=0> m0_sim;
+  vector[N_sim] m0_sim;
   vector<lower=0>[N_sim] time_sim;
-  int<lower=1> P_alpha_sim;                   // num fixefs
-  int<lower=1> P_beta_sim;                    // num fixefs
   int<lower=1> J_sim;                         // number of species
   matrix[J_sim, P_alpha_sim] X_alpha_sim;         // design matrix for alpha effects
   matrix[J_sim, P_beta_sim] X_beta_sim;           // design matrix for alpha effects

@@ -18,11 +18,9 @@ data {
   int<lower=1> N_sim;                         // number of data points
   real<lower=0> m0_sim;
   real<lower=0> time_sim;                   // time
-  int<lower=1> P_alpha_sim;                   // num fixefs
-  int<lower=1> P_beta_sim;                    // num fixefs
   int<lower=1> J_sim;                         // number of species
-  matrix[J_sim, P_alpha_sim] X_alpha_sim;         // design matrix for alpha effects
-  matrix[J_sim, P_beta_sim] X_beta_sim;           // design matrix for alpha effects
+  matrix[J_sim, P_alpha] X_alpha_sim;         // design matrix for alpha effects
+  matrix[J_sim, P_beta] X_beta_sim;           // design matrix for alpha effects
   int<lower=1, upper=J_sim> sp_sim[N_sim];            // species id
 
 }
@@ -56,8 +54,8 @@ generated quantities {
   vector[J_sim] alpha_sim;
   vector[J_sim] beta_sim;
 
-  alpha_sim = param(b_alpha, X_alpha_sim, P_alpha_sim, J_sim);
-  beta_sim = param(b_beta, X_beta_sim, P_beta_sim, J_sim);
+  alpha_sim = param(b_alpha, X_alpha_sim, P_alpha, J_sim);
+  beta_sim = param(b_beta, X_beta_sim, P_beta, J_sim);
   mT_sim = weibull_best_sim_rng(N_sim, m0_sim, time_sim, beta_sim, alpha_sim, sp_sim);
 
 }
